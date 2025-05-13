@@ -93,6 +93,21 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
+vim.g.python3_host_prog = '/home/modzmi01wsl/wsl_venv/bin/python'
+local clipboard = {
+  name = 'WslClipboard',
+  copy = {
+    ['+'] = 'clip.exe',
+    ['*'] = 'clip.exe',
+  },
+  paste = {
+    ['+'] = 'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+    ['*'] = 'powershell.exe -NoLogo -NoProfile -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+  },
+  cache_enabled = 0,
+}
+vim.g.clipboard = clipboard
+
 vim.o.termguicolors = true
 vim.o.background = 'dark'
 
@@ -177,7 +192,7 @@ vim.o.sidescrolloff = 20
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
-vim.o.fileformats = 'unix,dos'
+vim.opt.fileformats = { 'unix', 'dos' }
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
