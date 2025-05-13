@@ -76,38 +76,12 @@ return {
       end,
       desc = 'Debug: See last session result.',
     },
-    {
-      '<leader>dm',
-      function()
-        require('dap').repl.test_method()
-      end,
-      desc = 'Run dap for current test method',
-    },
-    {
-      '<leader>dM',
-      function()
-        require('dap').repl.test_method() { config = { justMyCode = false } }
-      end,
-      desc = 'Run dap for current test method [all code]',
-    },
-    {
-      '<leader>dc',
-      function()
-        require('dap').repl.test_class()
-      end,
-      desc = 'Run dap for current test class',
-    },
-    {
-      '<leader>dC',
-      function()
-        require('dap').repl.test_class() { config = { justMyCode = false } }
-      end,
-      desc = 'Run dap for current test class [all code]',
-    },
   },
   config = function()
     local dap = require 'dap'
     local dapui = require 'dapui'
+    require('dap-python').setup()
+    require('dap-python').test_runner = 'pytest'
 
     require('mason-nvim-dap').setup {
       -- Makes a best effort to setup the various debuggers with
@@ -226,7 +200,33 @@ return {
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    require('dap-python').setup()
-    require('dap-python').test_runner = 'pytest'
+    local keymap = vim.keymap.set
+    local dap = require 'dap'
+    local dap_python = require 'dap-python'
+    keymap('n', '<leader>db', dap.toggle_breakpoint, { silent = true, desc = 'Toggle dap breakpoint' })
+    keymap('n', '<leader>dB', function()
+      dap.toggle_breakpoint(vim.fn.input 'Condition for breakpoint: ')
+    end, { silent = true, desc = 'Toggle dap breakpoint condition' })
+    keymap('n', '<leader>dr', dap.repl.toggle, { silent = true, desc = 'Toggle dap repl' })
+    keymap('n', '<leader>dm', dap_python.test_method, { silent = true, desc = 'Run dap for current test method' })
+    keymap('n', '<leader>dM', function()
+      dap_python.test_method { config = { justMyCode = false } }
+    end, { silent = true, desc = 'Run dap for current test method' })
+    keymap('n', '<leader>dc', dap_python.test_class, { silent = true, desc = 'Run dap for current test class' })
+    keymap('n', '<leader>dC', function()
+      dap_python.test_class { config = { justMyCode = false } }
+    end, { silent = true, desc = 'Run dap for current test class' })
+    keymap('n', '<leader>dur', function()
+      dapui.toggle { layout = 1, reset = true }
+    end, { silent = true, desc = 'Toggle dapui repl layout (up)' })
+    keymap('n', '<leader>dus', function()
+      dapui.toggle { layout = 2, reset = true }
+    end, { silent = true, desc = 'Toggle dapui scopes layout (left)' })
+    keymap('n', '<leader>duc', function()
+      dapui.toggle { layout = 3, reset = true }
+    end, { silent = true, desc = 'Toggle dapui console layout (left)' })
+    keymap('n', '<leader>dua', function()
+      dapui.toggle { reset = true }
+    end, { silent = true, desc = 'Toggle all dapui layout' })
   end,
 }
