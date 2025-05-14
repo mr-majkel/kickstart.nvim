@@ -355,6 +355,8 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>g', group = '[G]it hunk', mode = { 'n', 'v' } },
+        { '<leader>e', group = 'Fugitiv[E]' },
+        { '<leader>d', group = '[D]ebug' },
       },
     },
   },
@@ -887,7 +889,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-moon'
+      vim.cmd.colorscheme 'tokyonight-night'
     end,
   },
 
@@ -929,6 +931,7 @@ require('lazy').setup({
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
+      require('mini.starter').setup()
     end,
   },
   { -- Highlight, edit, and navigate code
