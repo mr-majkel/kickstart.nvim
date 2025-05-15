@@ -176,6 +176,8 @@ vim.opt.fileformats = { 'unix', 'dos' }
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+vim.keymap.set('n', '<c-s>', '<c-^>', { desc = '[S]witch to prev. buffer' })
+vim.keymap.set('n', 'Q', ':q', { desc = '[Q]uit' })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
