@@ -2,13 +2,35 @@ return {
   {
     'CopilotC-Nvim/CopilotChat.nvim',
     dependencies = {
-      { 'github/copilot.vim' }, -- or zbirenbaum/copilot.lua
-      { 'nvim-lua/plenary.nvim', branch = 'master' }, -- for curl, log and async functions
+
+      { 'github/copilot.vim' },
+      { 'nvim-lua/plenary.nvim', branch = 'master' },
     },
-    build = 'make tiktoken', -- Only on MacOS or Linux
+    build = 'make tiktoken',
     opts = {
-      -- See Configuration section for options
+      model = 'gpt-4.1', -- AI model to use
+      temperature = 0.1, -- Lower = focused, higher = creative
+      window = {
+        layout = 'vertical',
+        width = 0.5,
+      },
+
+      headers = {
+        user = '👤 You',
+        assistant = '🤖 Copilot',
+        tool = '🔧 Tool',
+      },
+
+      separator = '━━',
+      auto_fold = true, -- Automatically folds non-assistant messages
+      auto_insert_mode = true, -- Enter insert mode when opening
+      mappings = {
+        complete = {
+          insert = '<C-t>',
+        },
+      },
     },
-    -- See Commands section for default commands if you want to lazy load on them
+    -- See Configuration section for options
   },
+  vim.keymap.set('n', '<leader>cc', '<cmd>CopilotChat<cr>', { desc = 'Chat with Copilot' }),
 }

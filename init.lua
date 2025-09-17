@@ -100,6 +100,7 @@ vim.o.background = 'dark'
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
+vim.o.completeopt = 'menu,popup,noselect'
 -- set backup copy to yes, to avoid issues with file mounts in docker
 vim.o.backupcopy = 'yes'
 -- Make line numbers default
