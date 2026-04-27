@@ -100,6 +100,7 @@ vim.o.background = 'dark'
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
+vim.o.laststatus = 3
 vim.o.completeopt = 'menu,popup,noselect'
 -- set backup copy to yes, to avoid issues with file mounts in docker
 vim.o.backupcopy = 'yes'
@@ -294,6 +295,69 @@ require('lazy').setup({
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
+  on_attach = function(bufnr)
+    local gitsigns = require('gitsigns')
+
+    local function map(mode, l, r, opts)
+      opts = opts or {}
+      opts.buffer = bufnr
+      vim.keymap.set(mode, l, r, opts)
+    end
+
+    -- Navigation
+    map('n', ']c', function()
+      if vim.wo.diff then
+        vim.cmd.normal({']c', bang = true})
+      else
+        gitsigns.nav_hunk('next')
+      end
+    end)
+
+    map('n', '[c', function()
+      if vim.wo.diff then
+        vim.cmd.normal({'[c', bang = true})
+      else
+        gitsigns.nav_hunk('prev')
+      end
+    end)
+
+    -- Actions
+    map('n', '<leader>gs', gitsigns.stage_hunk, {desc="stage hunk"})
+    map('n', '<leader>gr', gitsigns.reset_hunk, {desc="reset hunk"})
+
+    map('v', '<leader>gs', function()
+      gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+    end, {desc="stage hunk (visual)"})
+
+    map('v', '<leader>gr', function()
+      gitsigns.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+    end, {desc="reset hunk (visual)"})
+
+    map('n', '<leader>gS', gitsigns.stage_buffer, {desc="stage buffer"})
+    map('n', '<leader>gR', gitsigns.reset_buffer, {desc="reset buffer"})
+    map('n', '<leader>gp', gitsigns.preview_hunk, {desc="preview hunk"})
+    map('n', '<leader>gi', gitsigns.preview_hunk_inline, {desc="preview hunk inline"})
+
+    map('n', '<leader>gb', function()
+      gitsigns.blame_line({ full = true })
+    end, {desc="blame line"})
+
+    map('n', '<leader>gd', gitsigns.diffthis, {desc="diff this"})
+
+    map('n', '<leader>gD', function()
+      gitsigns.diffthis('~')
+    end, {desc="diff this ~"})
+
+    map('n', '<leader>gQ', function() gitsigns.setqflist('all') end, {desc="set qflist (all)"})
+    map('n', '<leader>gq', gitsigns.setqflist, {desc="set qflist (unstaged)"})
+
+    -- Toggles
+    map('n', '<leader>tb', gitsigns.toggle_current_line_blame, {desc="toggle current line blame"})
+    map('n', '<leader>tw', gitsigns.toggle_word_diff, {desc="toggle word diff"})
+
+    -- Text object
+    map({'o', 'x'}, 'ih', gitsigns.select_hunk, {desc="select hunk"})
+    end
     },
   },
 
@@ -720,46 +784,46 @@ require('lazy').setup({
     end,
   },
 
-  { -- Autoformat
-    'stevearc/conform.nvim',
-    event = { 'BufWritePre' },
-    cmd = { 'ConformInfo' },
-    -- keys = {
-    --   {
-    --     '<leader>f',
-    --     function()
-    --       require('conform').format { async = true, lsp_format = 'fallback' }
-    --     end,
-    --     mode = '',
-    --     desc = '[F]ormat buffer',
-    --   },
-    -- },
-    opts = {
-      notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          return nil
-        else
-          return {
-            timeout_ms = 500,
-            lsp_format = 'fallback',
-          }
-        end
-      end,
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-      },
-    },
-  },
+  -- { -- Autoformat
+  --   'stevearc/conform.nvim',
+  --   event = { 'BufWritePre' },
+  --   cmd = { 'ConformInfo' },
+  --   -- keys = {
+  --   --   {
+  --   --     '<leader>f',
+  --   --     function()
+  --   --       require('conform').format { async = true, lsp_format = 'fallback' }
+  --   --     end,
+  --   --     mode = '',
+  --   --     desc = '[F]ormat buffer',
+  --   --   },
+  --   -- },
+  --   opts = {
+  --     notify_on_error = false,
+  --     format_on_save = function(bufnr)
+  --       -- Disable "format_on_save lsp_fallback" for languages that don't
+  --       -- have a well standardized coding style. You can add additional
+  --       -- languages here or re-enable it for the disabled ones.
+  --       local disable_filetypes = { c = true, cpp = true }
+  --       if disable_filetypes[vim.bo[bufnr].filetype] then
+  --         return nil
+  --       else
+  --         return {
+  --           timeout_ms = 500,
+  --           lsp_format = 'fallback',
+  --         }
+  --       end
+  --     end,
+  --     formatters_by_ft = {
+  --       lua = { 'stylua' },
+  --       -- Conform can also run multiple formatters sequentially
+  --       -- python = { "isort", "black" },
+  --       --
+  --       -- You can use 'stop_after_first' to run the first available formatter from the list
+  --       -- javascript = { "prettierd", "prettier", stop_after_first = true },
+  --     },
+  --   },
+  -- },
 
   { -- Autocompletion
     {
@@ -937,6 +1001,8 @@ require('lazy').setup({
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
       -- require('mini.starter').setup()
+      require('mini.notify').setup()
+      require('mini.cmdline').setup()
       require('mini.hues').setup { background = '#1f1f1f', foreground = '#ffffff', hues = 8, accent = 'fg', saturation = 'high' }
     end,
   },
@@ -967,11 +1033,11 @@ require('lazy').setup({
   },
 
   require 'kickstart.plugins.debug',
-  require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  -- require 'kickstart.plugins.indent_line',
+  -- -- require 'kickstart.plugins.lint',
+  -- -- require 'kickstart.plugins.autopairs',
+  -- -- require 'kickstart.plugins.neo-tree',
+  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   { import = 'custom.plugins' },
   --
